@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AI Advancements Report (2024-2025)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Visualization & Content Choices:
+        - Executive Summary (Overview Section): Goal: Inform (Overall summary). Method: Key text highlights. Interaction: Static display. Justification: Quick overview.
+        - Generative AI (Core Models): Goal: Inform/Compare. Method: Interactive cards for models (OpenAI GPT-6, Google Gemini 3, Mistral 12B, LLaMA 3), key text on multimodal/agentic AI. Interaction: Clickable cards for details (mock). Justification: Easy comparison and focused info.
+        - LLM Architectures (Core Models): Goal: Inform. Method: Text explanations of xLSTM, MoBA, memory systems. Interaction: Static. Justification: Conceptual understanding.
+        - Computer Vision (Core Models): Goal: Inform. Method: Text on ROSS3D, InteractVLM, Gaze-Guided Learning. Interaction: Static. Justification: Key advancements.
+        - Speech & Language (Core Models): Goal: Inform. Method: Text on WSI, Phi-4-MM, SER. Interaction: Static. Justification: Key advancements.
+        - Robotics (Core Models): Goal: Inform. Method: Text on GR00T N1, HoST. Interaction: Static. Justification: Key advancements.
+        - Healthcare (Sectoral Impact): Goal: Inform/Quantify. Method: Text (drug discovery, diagnostics), Chart.js Bar Chart (Medical Diagnostics Market Growth: $1.3B 2023 to $3.7B 2028), Stat (30% admin time). Interaction: Chart display. Justification: Quantify impact.
+        - Financial Services (Sectoral Impact): Goal: Inform/Quantify. Method: Text (risk, corporate finance), Stats (98% CEO benefits, 90% AI trading by 2030). Interaction: Stat display. Justification: Highlight key metrics.
+        - Manufacturing/Supply Chain (Sectoral Impact): Goal: Inform/Quantify. Method: Text (predictive maintenance), Chart.js Bar Chart (Economic Value: $2.3T by 2030), Stats (30% forecast error reduction). Interaction: Chart/Stat display. Justification: Show scale of impact.
+        - Education (Sectoral Impact): Goal: Inform/Quantify. Method: Text (personalized learning), Stats (62% score increase, 70% grading time cut). Interaction: Stat display. Justification: Demonstrate benefits.
+        - Cybersecurity (Sectoral Impact): Goal: Inform. Method: Text (Darktrace HEAL, AI arms race). Interaction: Static. Justification: Explain evolving landscape.
+        - Compute Race (Infrastructure): Goal: Inform/Compare. Method: Text (GPU vs ASIC), Chart.js Line Chart (Data Center Processor Market: $147B 2024 to $372B 2030), Chart.js Pie Chart (Nvidia market share 72% vs ASIC). Interaction: Chart display. Justification: Visualize market dynamics.
+        - AI Infrastructure & Energy (Infrastructure): Goal: Inform/Quantify. Method: Text (CapEx, energy concerns), Chart.js Bar Chart (Big Tech CapEx >$213B 2024), Chart.js Bar Chart (Data Center Construction 0.5GW to 3.5GW). Interaction: Chart display. Justification: Show scale of investment and growth.
+        - Regulatory Frameworks (Ethics & Society): Goal: Inform/Organize. Method: Text summaries of EU AI Act, NIST AI RMF, OECD Principles. Interaction: Clickable tabs/buttons to show details for each framework. Justification: Structured access to key regulations.
+        - AI Safety & Alignment (Ethics & Society): Goal: Inform. Method: Text on misalignment, interpretability. Interaction: Static. Justification: Explain critical research areas.
+        - Workforce Impact (Ethics & Society): Goal: Inform/Quantify. Method: Text (job changes), Chart.js Bar Chart (Job displacement 75M vs. creation 97M), Stats (40% jobs affected). Interaction: Chart/Stat display. Justification: Quantify workforce shifts.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All charts via Chart.js (Canvas). Diagrams are text-based or simple HTML/CSS. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F5F5F5; color: #333333; }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link.active { color: #667EEA; border-bottom: 2px solid #667EEA; font-weight: 600;}
+        .nav-link:hover { color: #4C51BF; transform: translateY(-2px); }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .stat-card { background-color: white; border-radius: 0.5rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+        .tab-button { transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; }
+        .tab-button.active { background-color: #667EEA; color: white; }
+        .tab-button:hover:not(.active) { background-color: #E2E8F0; transform: translateY(-2px); }
+        .model-card { border: 1px solid #E2E8F0; transition: box-shadow 0.3s ease, transform 0.3s ease; }
+        .model-card:hover { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); transform: translateY(-5px); }
+        h1, h2, h3 { color: #4A5568; }
+        .sector-tab-button { transition: all 0.3s ease; }
+        .sector-tab-button:hover:not(.bg-indigo-500) { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-2xl font-bold text-indigo-600">AI Advancements (2024-2025)</h1>
+                <nav class="hidden md:flex space-x-4" id="desktop-nav">
+                    <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">Overview</a>
+                    <a href="#core-models" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">Core Models</a>
+                    <a href="#sectoral-impact" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">Sectoral Impact</a>
+                    <a href="#infrastructure" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">Infrastructure</a>
+                    <a href="#ethics-society" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">Ethics & Society</a>
+                </nav>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-transform duration-200 ease-in-out hover:scale-110">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden bg-white shadow-lg">
+            <a href="#overview" class="block nav-link px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100">Overview</a>
+            <a href="#core-models" class="block nav-link px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100">Core Models</a>
+            <a href="#sectoral-impact" class="block nav-link px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100">Sectoral Impact</a>
+            <a href="#infrastructure" class="block nav-link px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100">Infrastructure</a>
+            <a href="#ethics-society" class="block nav-link px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-100">Ethics & Society</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <section id="overview" class="content-section space-y-6">
+            <h2 class="text-3xl font-semibold text-gray-800">Overview: The Vanguard of Intelligence</h2>
+            <p class="text-lg text-gray-700 leading-relaxed">
+                This application explores key AI advancements and trends shaping 2024-2025 and beyond, based on the provided report. The period marks a pivotal phase in AI evolution, with rapid advancements in core models, their profound integration across diverse sectors, and significant developments in underlying infrastructure. Generative AI, in particular, is redefining capabilities in content creation, scientific discovery, and complex problem-solving. Explore the sections to understand the evolving landscape of AI models, their transformative impact, the foundational infrastructure, and the critical ethical and societal implications.
+            </p>
+            <div class="p-6 bg-indigo-50 border border-indigo-200 rounded-lg">
+                <h3 class="text-xl font-semibold text-indigo-700 mb-2">Executive Summary Highlights</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li>Rapid advancements in Generative AI, multimodal understanding, and autonomous agency.</li>
+                    <li>Dual trajectory: Powerful open-source models democratizing access vs. advanced proprietary systems pushing boundaries.</li>
+                    <li>Unprecedented global investment in AI-optimized hardware and data center infrastructure.</li>
+                    <li>Transformative AI adoption across healthcare, finance, manufacturing, education, and cybersecurity.</li>
+                    <li>Critical need for robust ethical frameworks, governance, and safety research.</li>
+                    <li>Shift towards human-AI collaboration, emphasizing workforce adaptation and AI literacy.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="core-models" class="content-section space-y-8">
+            <h2 class="text-3xl font-semibold text-gray-800">The Evolving Landscape of Core AI Models</h2>
+            <p class="text-lg text-gray-700 leading-relaxed">
+                This section delves into the significant advancements in core AI models. Discover the breakthroughs in Generative AI, the evolution of Large Language Model (LLM) architectures and memory systems, progress in Computer Vision, innovations in Speech and Language Processing, and the development of Robotics and Autonomous Systems. These advancements are foundational to AI's expanding capabilities and its integration into various aspects of technology and society.
+            </p>
+
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-4">Generative AI: Redefining Creation and Reasoning</h3>
+                <p class="mb-4 text-gray-600">Generative AI continues its rapid ascent, driven by breakthroughs in open-source and proprietary models, and a growing emphasis on multimodal capabilities. This is fundamentally altering content production, problem-solving, and system interactions.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="model-card p-6 rounded-lg bg-white">
+                        <h4 class="text-xl font-semibold text-indigo-600 mb-2">Open-Source Models</h4>
+                        <p class="text-gray-600 mb-3">Democratizing access and fostering global innovation.</p>
+                        <ul class="list-disc list-inside space-y-1 text-sm text-gray-700">
+                            <li><strong>Mistral 12B:</strong> State-of-the-art performance in smaller scales, efficient, fast, fine-tunable.</li>
+                            <li><strong>LLaMA 3 (Meta):</strong> Improved efficiency, scalability, multilingual focus.</li>
+                            <li><strong>Falcon 3B+:</strong> Low-resource efficiency, optimized for edge devices.</li>
+                            <li><strong>DeepSeek-V4:</strong> Strides in RAG and search-centric apps; cost-effective GPT-4 alternative. (Note: Also associated with data exfiltration concerns).</li>
+                        </ul>
+                    </div>
+                    <div class="model-card p-6 rounded-lg bg-white">
+                        <h4 class="text-xl font-semibold text-teal-600 mb-2">Proprietary Models</h4>
+                        <p class="text-gray-600 mb-3">Pushing the absolute frontier of AI capabilities.</p>
+                        <ul class="list-disc list-inside space-y-1 text-sm text-gray-700">
+                            <li><strong>OpenAI GPT-6 (Anticipated):</strong> Redefining multimodal capabilities and general-purpose reasoning.</li>
+                            <li><strong>Google Gemini 3 (Anticipated) & Gemini 2.0 Series:</strong> Focus on scientific problem-solving, multilingual capabilities, "agentic era" (Project Astra, Mariner, Jules). Gemini 1.5 Flash for speed/efficiency.</li>
+                            <li><strong>Anthropic Claude 4:</strong> Emphasis on alignment and safety for high-stakes environments.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg border">
+                    <h4 class="text-lg font-semibold text-gray-700 mb-2">Key Trends in Generative AI:</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-600">
+                        <li><strong>Multimodal AI:</strong> Processing audio, video, images, and text (e.g., GPT-4V, LLaVa, Google's ImageFX, MusicFX, Imagen 3, Veo 2).</li>
+                        <li><strong>Agentic AI:</strong> AI performing tasks actively, goal-directed, and autonomously (e.g., Google's Deep Research). Amplifies need for safety and HITL.</li>
+                        <li><strong>Dual Trajectory:</strong> Open-source for accessibility and community innovation; Proprietary for cutting-edge capabilities and control in sensitive applications.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-4">Next-Generation LLM Architectures and Memory Systems</h3>
+                <p class="mb-4 text-gray-600">LLMs are evolving beyond Transformers to address efficiency, scalability, and long-term interaction challenges, incorporating sophisticated memory systems inspired by cognitive psychology.</p>
+                <div class="space-y-4">
+                    <div class="p-4 bg-white rounded-lg shadow">
+                        <h4 class="text-lg font-semibold text-indigo-600">Architectural Innovations:</h4>
+                        <p class="text-sm text-gray-600">Addressing computational bottlenecks and enabling efficient inference, especially for long sequences and edge devices.</p>
+                        <ul class="list-disc list-inside text-sm text-gray-700 mt-2">
+                            <li><strong>xLSTM:</strong> Linear compute scaling, constant memory usage (e.g., xLSTM 7B).</li>
+                            <li><strong>Mixture of Block Attention (MoBA):</strong> Dynamic selection of historical segments for attention, enhancing efficiency for long sequences.</li>
+                            <li><strong>Other Linear RNNs:</strong> GLA, Mamba, RWKV, RetNet offering parallel training and recurrent generation.</li>
+                            <li><strong>Focus on Long-Output Generation:</strong> Critical for tasks like novel writing and complex reasoning.</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow">
+                        <h4 class="text-lg font-semibold text-indigo-600">Advanced Memory Systems:</h4>
+                        <p class="text-sm text-gray-600">Enabling coherent, long-term interactions and personalization.</p>
+                        <p class="text-sm text-gray-700 mt-1"><strong>Types:</strong> Parametric (internal knowledge), Contextual Unstructured (multimodal perceptual grounding), Contextual Structured (knowledge graphs for symbolic reasoning).</p>
+                        <p class="text-sm text-gray-700 mt-1"><strong>Operations:</strong> Consolidation, Indexing, Updating, Forgetting, Retrieval, Compression. "Forgetting" is key for privacy and bias mitigation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-4">Computer Vision: Perceiving and Understanding the World</h3>
+                <p class="mb-4 text-gray-600">Advancements focus on 3D scene understanding, improved classification by mitigating biases, and robust feature representation through self-supervised learning, aiming for more human-like visual interpretation.</p>
+                 <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><strong>3D Scene Understanding:</strong>
+                        <ul class="list-circle list-inside ml-4 text-sm">
+                            <li><strong>ROSS3D:</strong> Integrates 3D-aware visual supervision for complex scene interpretation from unlabeled 3D data.</li>
+                            <li><strong>InteractVLM:</strong> Estimates 3D contact points from single images for human-object joint reconstruction.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Image Classification & Object Detection:</strong>
+                         <ul class="list-circle list-inside ml-4 text-sm">
+                            <li><strong>Gaze-Guided Learning:</strong> Mitigates "shortcut biases" by integrating human gaze priors to improve localization and classification accuracy.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Self-Supervised Learning (SSL):</strong>
+                         <ul class="list-circle list-inside ml-4 text-sm">
+                            <li>Crucial for robust feature representation from unlabeled data, especially in video. Methods learn transformations independently.</li>
+                            <li>Unified benchmarks established for systematic investigation.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-4">Speech and Language Processing: Naturalizing Human-AI Interaction</h3>
+                <p class="mb-4 text-gray-600">Progress is making AI communication more seamless, inclusive, and emotionally aware through multilingual capabilities, speaker identification, and emotion recognition.</p>
+                 <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><strong>Multilingual Speech Recognition & Speaker ID:</strong>
+                        <ul class="list-circle list-inside ml-4 text-sm">
+                            <li><strong>WSI (Whisper Speaker Identification):</strong> Repurposes Whisper ASR encoder for robust speaker embeddings across languages.</li>
+                            <li><strong>Phi-4 Multimodal (Phi-4-MM) with ICL:</strong> In-context learning improves ASR robustness for diverse speakers/languages, especially low-resource varieties.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Emotion Recognition from Speech (SER):</strong>
+                         <ul class="list-circle list-inside ml-4 text-sm">
+                            <li>Frameworks integrating ASR error correction and modality-gated fusion for better SER with ASR transcripts.</li>
+                            <li>Leveraging Speech-to-Speech translation (S2ST) to generate labeled data for low-resource SER.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-4">Robotics and Autonomous Systems: Embodied Intelligence</h3>
+                <p class="mb-4 text-gray-600">The field is moving towards versatile, intelligent, human-like embodied agents capable of operating in complex environments, with significant progress in humanoid robotics and dexterous manipulation.</p>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><strong>Global Scaling:</strong> Autonomous systems in transportation (driverless cars), agriculture, logistics, and AI-enhanced space exploration.</li>
+                    <li><strong>Google's Robotics Transformers Extensions:</strong> AutoRT, SARA-RT, RT-Trajectory for better environment understanding and decision-making. ALOHA Unleashed (dual-arm coordination), DemoStart (multi-fingered hand simulation).</li>
+                    <li><strong>Humanoid Robotics & Dexterous Manipulation:</strong>
+                        <ul class="list-circle list-inside ml-4 text-sm">
+                            <li><strong>NVIDIA GR00T N1:</strong> Open foundation Vision-Language-Action (VLA) model for generalist humanoids, trained on diverse data.</li>
+                            <li><strong>HoST (Humanoid Standing-up Control):</strong> RL framework for learning standing-up control, robust sim-to-real transfer.</li>
+                            <li>Advancements in adapting skills to novel grasps, in-hand manipulation with tactile grippers, real-time telemanipulation.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p class="mt-4 text-gray-600">This signifies a shift from specialized automation to versatile, adaptable physical intelligence, capable of learning from human demonstrations and real-world variability.</p>
+            </div>
+
+        </section>
+
+        <section id="sectoral-impact" class="content-section space-y-8">
+            <h2 class="text-3xl font-semibold text-gray-800">AI's Transformative Impact Across Key Sectors</h2>
+            <p class="text-lg text-gray-700 leading-relaxed">
+                Artificial Intelligence is not just a theoretical advancement; it's actively reshaping industries worldwide. This section explores AI's profound impact on Healthcare and Life Sciences, Financial Services, Manufacturing and Supply Chain, Education, and Cybersecurity. Use the buttons below to navigate to a specific sector and discover how AI is driving innovation, efficiency, and new capabilities.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-6" id="sector-nav">
+                <button data-target="impact-healthcare" class="sector-tab-button bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow">Healthcare</button>
+                <button data-target="impact-finance" class="sector-tab-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg">Financial Services</button>
+                <button data-target="impact-manufacturing" class="sector-tab-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg">Manufacturing & Supply Chain</button>
+                <button data-target="impact-education" class="sector-tab-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg">Education</button>
+                <button data-target="impact-cybersecurity" class="sector-tab-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg">Cybersecurity</button>
+            </div>
+
+            <div id="sector-content-area" class="space-y-6">
+                <div id="impact-healthcare" class="sector-content space-y-4">
+                    <h3 class="text-2xl font-semibold text-gray-700">Healthcare and Life Sciences</h3>
+                    <p class="text-gray-600">AI is accelerating scientific discovery (e.g., protein folding, drug development via Google's "AI co-scientist"), enhancing precision diagnostics (e.g., Orli, Avandra, Tempus AI's Olivia), and streamlining administrative tasks (e.g., Microsoft's Dragon Copilot, ReportAid), moving towards proactive, personalized care.</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="stat-card">
+                            <h4 class="text-lg font-semibold text-indigo-700">Medical Diagnostics Market</h4>
+                            <p class="text-sm text-gray-600 mb-2">Projected Growth (CAGR 23.2%)</p>
+                            <div class="chart-container"><canvas id="medicalDiagnosticsChart"></canvas></div>
+                        </div>
+                        <div class="stat-card">
+                            <h4 class="text-lg font-semibold text-indigo-700">Physician Admin Burden</h4>
+                            <p class="text-5xl font-bold text-indigo-600">~30%</p>
+                            <p class="text-gray-600">of physician's day spent on administrative tasks, AI can alleviate this.</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500">Key trends: AI with Big Data/Omics, generative AI for drug development, AI-driven drug repurposing, pharma-AI partnerships, FDA engagement (draft guidance 2025).</p>
+                    <p class="text-sm text-gray-500">AI Impact: Improved outcomes, reduced misdiagnosis, addresses worker shortage, but raises ethical/regulatory questions (privacy, bias, XAI).</p>
+                </div>
+
+                <div id="impact-finance" class="sector-content space-y-4" style="display:none;">
+                    <h3 class="text-2xl font-semibold text-gray-700">Financial Services</h3>
+                    <p class="text-gray-600">AI processes vast data for real-time market insights, personalizes consumer tools (e.g., Cleo for budgeting), and fortifies risk management (e.g., Darktrace HEAL for cyber threats, Ceto for shipping underwriting).</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="stat-card">
+                            <h4 class="text-lg font-semibold text-indigo-700">CEO Reported Benefits</h4>
+                            <p class="text-5xl font-bold text-indigo-600">98%</p>
+                            <p class="text-gray-600">of CEOs report immediate business benefits from AI/ML in corporate finance.</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4 class="text-lg font-semibold text-indigo-700">AI in Trading</h4>
+                            <p class="text-5xl font-bold text-indigo-600">90%</p>
+                            <p class="text-gray-600">of trading decisions projected to be AI-augmented by 2030.</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500">Corporate Finance: AI identifies inefficiencies, enables dynamic budgeting/forecasting, optimizes liquidity management. AI is becoming the "nervous system" of finance, enabling efficiency, accuracy, and agility. Challenges: data privacy, security, need for human oversight.</p>
+                </div>
+
+                <div id="impact-manufacturing" class="sector-content space-y-4" style="display:none;">
+                    <h3 class="text-2xl font-semibold text-gray-700">Manufacturing and Supply Chain</h3>
+                    <p class="text-gray-600">AI transitions operations to proactive, optimized, resilient systems. Predictive maintenance (e.g., Tractian), operational optimization, dynamic inventory management, and route optimization are key impacts. Digital twins and generative AI create optimal designs.</p>
+                     <div class="grid md:grid-cols-2 gap-6">
+                        <div class="stat-card">
+                            <h4 class="text-lg font-semibold text-indigo-700">Economic Value (Manufacturing)</h4>
+                             <p class="text-sm text-gray-600 mb-2">Projected by 2030 due to AI adoption</p>
+                            <div class="chart-container"><canvas id="manufacturingValueChart"></canvas></div>
+                        </div>
+                        <div class="stat-card">
+                            <h4 class="text-lg font-semibold text-indigo-700">Supply Chain Improvements</h4>
+                            <ul class="list-disc list-inside text-gray-600">
+                                <li><strong>30%</strong> reduction in forecast error rates.</li>
+                                <li><strong>15%</strong> decrease in required safety stock.</li>
+                                <li><strong>20%</strong> improvement in on-shelf availability.</li>
+                                <li><strong>$300M</strong> annual savings in inventory holding costs.</li>
+                                <li><strong>40%</strong> faster response to demand changes.</li>
+                            </ul>
+                            <p class="text-sm text-gray-500 mt-2">Example: CADDi optimizes parts procurement.</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500">Shift towards self-optimizing supply chains enhancing resilience. Implies need for workforce upskilling.</p>
+                </div>
+
+                <div id="impact-education" class="sector-content space-y-4" style="display:none;">
+                    <h3 class="text-2xl font-semibold text-gray-700">Education</h3>
+                    <p class="text-gray-600">AI enables personalized learning paths (adaptive systems leading to 62% test score increase), automates administrative tasks for educators (70% reduction in grading workload via tools like Gradescope), and fosters AI literacy (core competency by 2025).</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                         <div class="stat-card">
+                            <h4 class="text-lg font-semibold text-indigo-700">Student Performance & Engagement</h4>
+                            <ul class="list-disc list-inside text-gray-600">
+                                <li><strong>62%</strong> increase in student test scores with adaptive AI.</li>
+                                <li><strong>80%</strong> accuracy in predicting struggling students.</li>
+                                <li><strong>40%</strong> enhancement in knowledge retention.</li>
+                                <li><strong>91%</strong> accuracy for AI chatbots providing personalized help.</li>
+                            </ul>
+                        </div>
+                        <div class="stat-card">
+                            <h4 class="text-lg font-semibold text-indigo-700">Educator Workload Reduction</h4>
+                             <ul class="list-disc list-inside text-gray-600">
+                                <li><strong>70%</strong> cut in teacher grading workloads.</li>
+                                <li><strong>60%</strong> grading time reduction with Gradescope.</li>
+                                <li><strong>49%</strong> of teachers report workload benefits from AI automation.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500">AI transforms learning experiences and educator roles, allowing focus on human skills. Necessitates training and equitable access.</p>
+                </div>
+
+                <div id="impact-cybersecurity" class="sector-content space-y-4" style="display:none;">
+                    <h3 class="text-2xl font-semibold text-gray-700">Cybersecurity</h3>
+                    <p class="text-gray-600">AI is indispensable for advanced threat detection and response. Tools like Darktrace HEAL (autonomous detection, learns from emerging threats) and CrowdStrike Charlotte AI (high-speed precision, automated analysis and remediation) are reshaping defensive strategies.</p>
+                    <p class="text-gray-700 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        The emergence of specialized AI tools signifies AI as a critical, adaptive component in cybersecurity. This creates an "AI arms race," as attackers also leverage AI. This necessitates continuous innovation in AI security, robust data protection, agile regulation, and consideration of ethical implications of autonomous offensive AI.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="infrastructure" class="content-section space-y-8">
+            <h2 class="text-3xl font-semibold text-gray-800">The Foundational Pillars: AI Infrastructure and Hardware</h2>
+            <p class="text-lg text-gray-700 leading-relaxed">
+                The rapid advancements in AI are heavily reliant on powerful and evolving infrastructure. This section examines the "Compute Race," detailing the competition and innovation in GPUs, ASICs, and emerging architectures. It also covers the significant AI infrastructure development, including massive capital expenditures and data center construction, alongside the critical considerations of energy consumption and environmental impact.
+            </p>
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-4">The Compute Race: GPUs, ASICs, and Emerging Architectures</h3>
+                <p class="mb-4 text-gray-600">Demand for generative AI drives a global compute race, reshaping the data center processor market and accelerating hardware innovation. Nvidia's GPUs dominate, but AI ASICs (co-designed by hyperscalers like Google/AWS and startups like Groq, Cerebras) are gaining share.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="stat-card">
+                        <h4 class="text-lg font-semibold text-indigo-700">Data Center Processor Market</h4>
+                        <p class="text-sm text-gray-600 mb-2">Projected Growth</p>
+                        <div class="chart-container"><canvas id="processorMarketChart"></canvas></div>
+                    </div>
+                    <div class="stat-card">
+                        <h4 class="text-lg font-semibold text-indigo-700">AI Acceleration Market Share (2023)</h4>
+                        <p class="text-sm text-gray-600 mb-2">Nvidia GPU Dominance vs. ASIC Rise</p>
+                        <div class="chart-container h-[250px] max-h-[300px]"><canvas id="acceleratorMarketShareChart"></canvas></div>
+                         <p class="text-xs text-gray-500 mt-2">AI ASICs projected to increase share by 8 percentage points by 2025.</p>
+                    </div>
+                </div>
+                <p class="mt-4 text-sm text-gray-500">Advancements: Multi-chiplet architectures, advanced nodes (3nm CPUs, 4nm GPUs/ASICs moving to 3nm), HBM memory, SRAM-based processors. Nvidia's Rubin Ultra (2027) targets 100 PetaFLOPs.</p>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-4">AI Infrastructure Development and Energy Consumption</h3>
+                <p class="mb-4 text-gray-600">Massive CapEx by Big Tech (Amazon, Google, Microsoft, Meta >\$213B in 2024, Microsoft \$80B for FY25) fuels a data center construction boom (US: 0.5GW in 2020 to 3.5GW in 2024). Generative AI infra spending: \$110B (2024) to \$1.3T (2032).</p>
+                 <div class="grid md:grid-cols-2 gap-6">
+                    <div class="stat-card">
+                        <h4 class="text-lg font-semibold text-indigo-700">Big Tech AI CapEx (2024)</h4>
+                        <p class="text-5xl font-bold text-indigo-600">>\$213 B</p>
+                        <p class="text-gray-600">By Amazon, Google, Microsoft, Meta.</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4 class="text-lg font-semibold text-indigo-700">US Data Center Construction</h4>
+                         <p class="text-sm text-gray-600 mb-2">Gigawatts (GW) Added Annually</p>
+                        <div class="chart-container"><canvas id="dataCenterConstructionChart"></canvas></div>
+                    </div>
+                </div>
+                <p class="mt-4 text-gray-700 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <strong>Energy Concerns:</strong> GAO report (April 2025) highlights "uncertain but substantial" energy consumption, emissions, water usage. Policy responses include EO 14261 ("Reinvigorating Clean Coal") and DOE RFI for AI data centers on federal lands. This creates tension between AI acceleration and environmental sustainability.
+                </p>
+            </div>
+        </section>
+
+        <section id="ethics-society" class="content-section space-y-8">
+            <h2 class="text-3xl font-semibold text-gray-800">Ethical AI, Governance, and Societal Implications</h2>
+            <p class="text-lg text-gray-700 leading-relaxed">
+                The rapid advancement and adoption of AI bring forth significant ethical questions, the need for robust governance, and profound societal impacts, especially on the workforce. This section explores the evolving regulatory landscape, crucial research in AI safety and alignment, and the transformation of jobs and skills in the AI era.
+            </p>
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-4">Evolving Regulatory Frameworks and Governance</h3>
+                <p class="mb-4 text-gray-600">Global push for stricter AI regulations to mitigate risks like bias, privacy compromise, and regulatory violations. Shift from voluntary guidelines to binding regulations.</p>
+                <div class="mb-4">
+                    <div class="flex flex-wrap gap-2 border-b border-gray-200" id="regulation-tabs">
+                        <button data-target="reg-eu" class="regulation-tab-button tab-button py-2 px-4 rounded-t-lg font-medium text-sm active">EU AI Act</button>
+                        <button data-target="reg-us-nist" class="regulation-tab-button tab-button py-2 px-4 rounded-t-lg font-medium text-sm">NIST AI RMF (USA)</button>
+                        <button data-target="reg-oecd" class="regulation-tab-button tab-button py-2 px-4 rounded-t-lg font-medium text-sm">OECD AI Principles</button>
+                        <button data-target="reg-us-gov" class="regulation-tab-button tab-button py-2 px-4 rounded-t-lg font-medium text-sm">US Gov (Apr 2025)</button>
+                    </div>
+                    <div id="regulation-content-area" class="p-4 bg-white rounded-b-lg shadow">
+                        <div id="reg-eu" class="regulation-content active">
+                            <h4 class="font-semibold text-indigo-600">EU AI Act (Implemented 2024)</h4>
+                            <p class="text-sm text-gray-700">Risk-based classification for AI. Fines up to 6% global revenue for violations.</p>
+                        </div>
+                        <div id="reg-us-nist" class="regulation-content" style="display:none;">
+                            <h4 class="font-semibold text-indigo-600">NIST AI Risk Management Framework (USA)</h4>
+                            <p class="text-sm text-gray-700">Voluntary guidelines for trustworthy AI, focusing on risk management.</p>
+                        </div>
+                        <div id="reg-oecd" class="regulation-content" style="display:none;">
+                            <h4 class="font-semibold text-indigo-600">OECD AI Principles</h4>
+                            <p class="text-sm text-gray-700">Global ethical standards for human-centric AI development.</p>
+                        </div>
+                         <div id="reg-us-gov" class="regulation-content" style="display:none;">
+                            <h4 class="font-semibold text-indigo-600">US Government Developments (April 2025)</h4>
+                            <p class="text-sm text-gray-700">OMB Memos (AI Use, AI Procurement) implementing EO 14179 for pro-innovation policy. GAO report on AI's environmental/human effects. Kansas ban on DeepSeek.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500">International collaboration: UNESCO Global Forum (June 2025), Yale "Responsible AI in Global Business 2025". Geopolitical complexities influence regulatory landscapes.</p>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-4">AI Safety and Alignment Research</h3>
+                <p class="mb-4 text-gray-600">Critical focus due to advancing capabilities and potential for transformative AI. Addressing risks of misalignment (AI pursuing unintended goals) and ensuring interpretability are key.</p>
+                <ul class="list-disc list-inside space-y-1 text-gray-700">
+                    <li><strong>Misalignment Research:</strong> Exploring "alignment faking" (AI pretending alignment).</li>
+                    <li><strong>Interpretability Methods:</strong> Decomposing AI internal mechanisms for understanding, steering, finding adversarial inputs, robust unlearning.</li>
+                    <li><strong>Toy Models:</strong> Simplified proxies to understand LLM internals.</li>
+                    <li><strong>Collaborative Efforts:</strong> Workshops (Vienna Alignment Workshop), Organizations (FAR.AI) debating safety, robustness, governance.</li>
+                </ul>
+                <p class="mt-2 text-sm text-gray-500">Essential for building trust and ensuring beneficial AI development.</p>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-4">Impact on Workforce and Job Transformation</h3>
+                <p class="mb-4 text-gray-600">AI affects >40% of jobs globally, ~30% US work hours automatable by 2030 (11.8M US career changes). Disproportionate impact on women and lower-wage workers.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                     <div class="stat-card">
+                        <h4 class="text-lg font-semibold text-indigo-700">Global Job Displacement vs. Creation</h4>
+                        <p class="text-sm text-gray-600 mb-2">Projected Impact of AI</p>
+                        <div class="chart-container"><canvas id="jobImpactChart"></canvas></div>
+                    </div>
+                    <div class="stat-card">
+                        <h4 class="text-lg font-semibold text-indigo-700">Emerging Roles & Skill Demand</h4>
+                        <ul class="list-disc list-inside text-gray-600 text-sm">
+                            <li>STEM jobs: +23% by 2030.</li>
+                            <li>AI/ML specialists: +40% by 2027.</li>
+                            <li>Data analysts, digital transformation specialists: +30-35%.</li>
+                            <li>New roles: AI trainers, prompt engineers.</li>
+                            <li>In-demand: Empathy, communication, critical thinking, AI literacy, data competencies.</li>
+                        </ul>
+                         <p class="text-xs text-gray-500 mt-2">42% employers plan AI training by 2027.</p>
+                    </div>
+                </div>
+                <p class="mt-4 text-sm text-gray-500">Shift from job replacement fears to skill transformation and continuous learning. Emphasis on uniquely human skills augmented by AI.</p>
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm">&copy; 2025 Interactive AI Advancements Report. Information based on the provided source document.</p>
+            <p class="text-xs mt-1">This SPA is for illustrative and informational purposes.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            function setActiveSection(targetId) {
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + targetId) {
+                        link.classList.add('active');
+                    }
+                });
+                // Close mobile menu after navigation
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            }
+
+            // Initial section activation
+            const initialHash = window.location.hash.substring(1);
+            if (initialHash && document.getElementById(initialHash)) {
+                 setActiveSection(initialHash);
+            } else {
+                setActiveSection('overview'); // Default section
+            }
+           
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    setActiveSection(targetId);
+                    window.location.hash = targetId; // Update URL hash
+                });
+            });
+            
+            window.addEventListener('hashchange', () => {
+                const hash = window.location.hash.substring(1);
+                if (hash && document.getElementById(hash)) {
+                    setActiveSection(hash);
+                } else if (!hash) {
+                     setActiveSection('overview');
+                }
+            });
+
+
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Sectoral Impact Tabs
+            const sectorTabButtons = document.querySelectorAll('.sector-tab-button');
+            const sectorContents = document.querySelectorAll('#sector-content-area .sector-content');
+
+            sectorTabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+
+                    sectorTabButtons.forEach(btn => {
+                        btn.classList.remove('bg-indigo-500', 'text-white');
+                        btn.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                    });
+                    this.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                    this.classList.add('bg-indigo-500', 'text-white', 'hover:bg-indigo-600');
+                    
+                    sectorContents.forEach(content => {
+                        if (content.id === targetId) {
+                            content.style.display = 'block';
+                        } else {
+                            content.style.display = 'none';
+                        }
+                    });
+                });
+            });
+             // Activate the first sector tab by default
+            if (sectorTabButtons.length > 0) {
+                sectorTabButtons[0].click();
+            }
+
+
+            // Regulation Tabs
+            const regulationTabButtons = document.querySelectorAll('.regulation-tab-button');
+            const regulationContents = document.querySelectorAll('#regulation-content-area .regulation-content');
+
+            regulationTabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    regulationTabButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    regulationContents.forEach(content => {
+                        content.style.display = content.id === targetId ? 'block' : 'none';
+                    });
+                });
+            });
+
+
+            // Chart.js Implementations
+            // Helper to wrap long labels
+            function wrapLabels(label, maxWidth) {
+                const words = label.split(' ');
+                let lines = [];
+                let currentLine = words[0];
+                for (let i = 1; i < words.length; i++) {
+                    if (currentLine.length + words[i].length + 1 <= maxWidth) {
+                        currentLine += ' ' + words[i];
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = words[i];
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            }
+            
+            const defaultChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 4,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { font: { size: 10 } }
+                    },
+                    x: {
+                        ticks: { 
+                            font: { size: 10 },
+                            callback: function(value, index, values) {
+                                const label = this.getLabelForValue(value);
+                                return wrapLabels(label, 10); // Wrap labels at 10 chars
+                            }
+                        }
+                    }
+                }
+            };
+
+
+            if (document.getElementById('medicalDiagnosticsChart')) {
+                new Chart(document.getElementById('medicalDiagnosticsChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['2023', '2028 (Projected)'],
+                        datasets: [{
+                            label: 'Market Size ($ Billions)',
+                            data: [1.30, 3.70],
+                            backgroundColor: ['#667EEA', '#ED8936'],
+                        }]
+                    },
+                    options: defaultChartOptions
+                });
+            }
+            
+            if (document.getElementById('manufacturingValueChart')) {
+                new Chart(document.getElementById('manufacturingValueChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Economic Value by 2030'],
+                        datasets: [{
+                            label: 'Value ($ Trillions)',
+                            data: [2.3],
+                            backgroundColor: ['#48BB78'],
+                        }]
+                    },
+                    options: defaultChartOptions
+                });
+            }
+
+            if (document.getElementById('processorMarketChart')) {
+                new Chart(document.getElementById('processorMarketChart'), {
+                    type: 'line',
+                    data: {
+                        labels: ['2024', '2030 (Projected)'],
+                        datasets: [{
+                            label: 'Market Size ($ Billions)',
+                            data: [147, 372],
+                            borderColor: '#667EEA',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: defaultChartOptions
+                });
+            }
+            
+            if (document.getElementById('acceleratorMarketShareChart')) {
+                new Chart(document.getElementById('acceleratorMarketShareChart'), {
+                    type: 'pie',
+                    data: {
+                        labels: ["Nvidia GPUs (2023)", "Other (incl. AI ASICs, 2023)"],
+                        datasets: [{
+                            data: [72, 28], // Nvidia 72%, Other 28%
+                            backgroundColor: ['#667EEA', '#A0AEC0'],
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: {size: 10}} }, tooltip: defaultChartOptions.plugins.tooltip } }
+                });
+            }
+
+            if (document.getElementById('dataCenterConstructionChart')) {
+                 new Chart(document.getElementById('dataCenterConstructionChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['2020', '2024 (Est.)'],
+                        datasets: [{
+                            label: 'GW Added (US Primary Markets)',
+                            data: [0.5, 3.5],
+                            backgroundColor: ['#ED8936', '#48BB78'],
+                        }]
+                    },
+                    options: defaultChartOptions
+                });
+            }
+            
+            if (document.getElementById('jobImpactChart')) {
+                new Chart(document.getElementById('jobImpactChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jobs Displaced (Millions)', 'New AI Jobs Created (Millions)'],
+                        datasets: [{
+                            label: 'Number of Jobs (Millions)',
+                            data: [75, 97],
+                            backgroundColor: ['#ED8936', '#48BB78'],
+                        }]
+                    },
+                     options: defaultChartOptions
+                });
+            }
+
+        });
+    </script>
+</body>
+</html>
